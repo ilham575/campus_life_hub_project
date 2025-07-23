@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'pages/profile_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -67,6 +68,13 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _goToProfile() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => ProfilePage()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -108,6 +116,12 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            SizedBox(height: 32),
+            ElevatedButton.icon(
+              onPressed: _goToProfile,
+              icon: Icon(Icons.person),
+              label: Text('Profile'),
             ),
           ],
         ),
