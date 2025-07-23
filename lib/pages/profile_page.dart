@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final userEmail = FirebaseAuth.instance.currentUser?.email ?? '';
+
     return Scaffold(
       backgroundColor: Colors.grey[100],
       appBar: AppBar(
@@ -38,7 +41,7 @@ class ProfilePage extends StatelessWidget {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  'user@email.com',
+                  userEmail,
                   style: TextStyle(
                     fontSize: 16,
                     color: Colors.grey[700],
