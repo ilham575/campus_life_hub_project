@@ -156,7 +156,14 @@ class Login extends StatelessWidget {
           context: context
         );
       },
-      child: const Text("Sign In"),
+      child: const Text(
+        "Sign In",
+        style: TextStyle(
+          color: Colors.white, // เปลี่ยนเป็นสีที่ต้องการ เช่น Colors.blue
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
     );
   }
 

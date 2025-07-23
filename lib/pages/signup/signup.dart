@@ -138,7 +138,14 @@ class Signup extends StatelessWidget {
           context: context
         );
       },
-      child: const Text("Sign Up"),
+      child: const Text(
+        "Sign Up",
+        style: TextStyle(
+          color: Colors.white, // เปลี่ยนเป็นสีที่ต้องการ เช่น Colors.blue
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
     );
   }
 
