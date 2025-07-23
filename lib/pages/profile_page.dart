@@ -54,7 +54,7 @@ class ProfilePage extends StatelessWidget {
                     icon: Icon(Icons.edit),
                     label: Text('แก้ไขข้อมูล'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
+                      backgroundColor: const Color.fromARGB(255, 183, 162, 219),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
