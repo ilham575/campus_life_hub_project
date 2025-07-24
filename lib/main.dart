@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'pages/profile_page.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:campus_life_hub/pages/login/login.dart';
-import 'package:campus_life_hub/services/auth_service.dart';
-import 'pages/signup/signup.dart';
+
 
 
 Future<void> main() async {
