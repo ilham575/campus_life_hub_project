@@ -2,7 +2,7 @@ import 'package:campus_life_hub/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:campus_life_hub/pages/profile_page.dart'; // Assuming profile_page.dart exists
+import 'package:campus_life_hub/pages/proflie/profile.dart'; // Assuming profile_page.dart exists
 
 class Home extends StatefulWidget {
   const Home({super.key});
