@@ -2,7 +2,7 @@ import 'package:campus_life_hub/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:campus_life_hub/pages/proflie/profile.dart'; // Assuming profile_page.dart exists
+import 'package:campus_life_hub/pages/profile/profile.dart'; // Assuming profile_page.dart exists
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -79,7 +79,10 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const SizedBox(height: 30),
-              _logout(context), // Now _logout can access context
+              // เพิ่ม Card ข่าว
+              NewsCardList(),
+              const SizedBox(height: 30),
+              _logout(context),
             ],
           ),
         ),
@@ -104,6 +107,44 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+    );
+  }
+}
+
+// เพิ่ม Widget สำหรับแสดงข่าว
+class NewsCardList extends StatelessWidget {
+  final List<Map<String, String>> newsList = const [
+    {
+      'title': 'กิจกรรมรับน้องใหม่',
+      'detail': 'ขอเชิญนักศึกษาใหม่เข้าร่วมกิจกรรมรับน้อง วันที่ 10 มิ.ย. 2567',
+    },
+    {
+      'title': 'ประกาศปิดปรับปรุงระบบ',
+      'detail': 'ระบบจะปิดปรับปรุงในวันที่ 15 มิ.ย. 2567 เวลา 22:00-02:00 น.',
+    },
+    {
+      'title': 'ทุนการศึกษาประจำปี',
+      'detail': 'เปิดรับสมัครทุนการศึกษาสำหรับนักศึกษาที่มีผลการเรียนดี',
+    },
+  ];
+
+  const NewsCardList({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: newsList.map((news) => Card(
+        margin: const EdgeInsets.symmetric(vertical: 8),
+        elevation: 3,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: ListTile(
+          leading: const Icon(Icons.campaign, color: Colors.deepPurple),
+          title: Text(news['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
+          subtitle: Text(news['detail'] ?? ''),
+        ),
+      )).toList(),
     );
   }
 }
