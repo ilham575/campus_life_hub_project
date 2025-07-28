@@ -38,6 +38,7 @@ dependencies:
   firebase_core: ^3.15.2
   fluttertoast: ^8.2.12
   google_fonts: 6.2.1 
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
@@ -50,6 +51,18 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
 
+flutter_native_splash:
+  android: true
+  ios: true
+
+  color: "#FFFFFF"
+  image: assets/images/splashscreen.png
+  #branding: assets/images/brandimage.png
+
+  android_12:
+    image: assets/images/splashscreen.png
+    color: "#FFFFFF"
+    
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

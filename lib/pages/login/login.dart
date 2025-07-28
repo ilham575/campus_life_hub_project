@@ -1,6 +1,5 @@
 import 'package:campus_life_hub/pages/signup/signup.dart';
 import 'package:campus_life_hub/services/auth_service.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
