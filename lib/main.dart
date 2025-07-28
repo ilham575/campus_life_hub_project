@@ -3,10 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:campus_life_hub/pages/login/login.dart';
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 13a77d3 (edit conflict)
 
 
 Future<void> main() async {

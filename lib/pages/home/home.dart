@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:campus_life_hub/pages/proflie/profile.dart'; // Assuming profile_page.dart exists
+import 'package:campus_life_hub/navbar/main_navbar.dart'; // Import the MainNavBar widget
+import 'package:campus_life_hub/pages/news/news.dart'; // หรือ path ที่ถูกต้อง
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -85,25 +87,16 @@ class _HomeState extends State<Home> {
         ),
       ),
       ProfilePage(), // Your Profile Page
+      NewsPage(),    // หน้า News ใหม่
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: _pages[_selectedIndex], // Display the selected page
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'หน้าแรก',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'โปรไฟล์',
-          ),
-        ],
-      ),
-    );
+  backgroundColor: Colors.white,
+  body: _pages[_selectedIndex],
+  bottomNavigationBar: MainNavBar(
+    currentIndex: _selectedIndex,
+    onTap: _onItemTapped,
+  ),
+);
   }
 }
