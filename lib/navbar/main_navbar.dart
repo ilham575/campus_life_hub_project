@@ -18,7 +18,7 @@ class MainNavBar extends StatelessWidget {
       onTap: onTap,
       items: const [
         BottomNavigationBarItem(icon: Icon(Icons.home), label: 'หน้าแรก'),
-        BottomNavigationBarItem(icon: Icon(Icons.newspaper), label: 'ตารางเรียน'),
+        BottomNavigationBarItem(icon: Icon(Icons.schedule), label: 'ตารางเรียน'),
         BottomNavigationBarItem(icon: Icon(Icons.person), label: 'โปรไฟล์'),
       ],
     );
