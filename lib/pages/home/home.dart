@@ -149,33 +149,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const SizedBox(height: 10),
-              Expanded(
-                child: ListView(
-                  children: [
-                    ...newsList.map((news) => Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8),
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: ExpansionTile(
-                        leading: const Icon(Icons.campaign, color: Colors.deepPurple),
-                        title: Text(
-                          news['title'] ?? '',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                            child: Text(news['detail'] ?? ''),
-                          ),
-                        ],
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 30),
+              // ลบ Expanded + ListView ที่แสดงข่าวแบบไม่มี filter ออก
               // เพิ่ม Card ข่าว
               NewsCardList(),
               const SizedBox(height: 30),
