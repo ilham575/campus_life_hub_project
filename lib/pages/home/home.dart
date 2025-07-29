@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:campus_life_hub/pages/profile/profile.dart'; // Assuming profile_page.dart exists
-import 'package:campus_life_hub/pages/proflie/profile.dart'; // Assuming profile_page.dart exists
 import 'package:campus_life_hub/navbar/main_navbar.dart'; // Import the MainNavBar widget
 import 'package:campus_life_hub/pages/news/news.dart'; // หรือ path ที่ถูกต้อง
 
