@@ -50,24 +50,6 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, String>> newsList = [
-      {
-        'title': 'แจ้งปิดปรับปรุงระบบ',
-        'detail': 'ระบบจะปิดปรับปรุงในวันที่ 10-12 มิถุนายน 2567 เวลา 22:00-04:00 น.'
-      },
-      {
-        'title': 'เปิดรับสมัครชมรมใหม่',
-        'detail': 'นักศึกษาที่สนใจสามารถสมัครเข้าร่วมชมรมได้ที่อาคารกิจกรรมนักศึกษา'
-      },
-      {
-        'title': 'ประกาศวันหยุด',
-        'detail': 'มหาวิทยาลัยหยุดทำการในวันที่ 20 มิถุนายน 2567 เนื่องในวันสำคัญ'
-      },
-      {
-        'title': 'สัปดาห์วิทยาศาสตร์',
-        'detail': 'ร่วมงานสัปดาห์วิทยาศาสตร์ คณะวิทยาศาสตร์'
-      }
-    ];
 
     final List<Widget> _pages = [
       // Home tab content
@@ -149,11 +131,9 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const SizedBox(height: 10),
-              // ลบ Expanded + ListView ที่แสดงข่าวแบบไม่มี filter ออก
               // เพิ่ม Card ข่าว
               NewsCardList(),
               const SizedBox(height: 30),
-              _logout(context),
             ],
           ),
         ),
