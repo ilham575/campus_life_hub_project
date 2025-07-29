@@ -28,7 +28,7 @@ class _HomeState extends State<Home> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),
-        minimumSize: const Size(double.infinity, 60),
+        // minimumSize: const Size(double.infinity, 60), // ลบออกเพื่อไม่ให้ปุ่มกว้างสุดใน Row
         elevation: 0,
       ),
       onPressed: () async {
@@ -47,49 +47,141 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    // Define the _pages list inside the build method
-    // This ensures that 'context' is available when creating these widgets.
+    final List<Map<String, String>> newsList = [
+      {
+        'title': 'แจ้งปิดปรับปรุงระบบ',
+        'detail': 'ระบบจะปิดปรับปรุงในวันที่ 10-12 มิถุนายน 2567 เวลา 22:00-04:00 น.'
+      },
+      {
+        'title': 'เปิดรับสมัครชมรมใหม่',
+        'detail': 'นักศึกษาที่สนใจสามารถสมัครเข้าร่วมชมรมได้ที่อาคารกิจกรรมนักศึกษา'
+      },
+      {
+        'title': 'ประกาศวันหยุด',
+        'detail': 'มหาวิทยาลัยหยุดทำการในวันที่ 20 มิถุนายน 2567 เนื่องในวันสำคัญ'
+      },
+      {
+        'title': 'สัปดาห์วิทยาศาสตร์',
+        'detail': 'ร่วมงานสัปดาห์วิทยาศาสตร์ คณะวิทยาศาสตร์'
+      }
+    ];
+
     final List<Widget> _pages = [
-      // This is the content for the "Home" tab
+      // Home tab content
       SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        radius: 28,
+                        backgroundColor: Colors.blue.shade100,
+                        child: Icon(Icons.person, size: 36, color: Colors.blue.shade700),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Hello👋',
+                              style: GoogleFonts.raleway(
+                                textStyle: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              FirebaseAuth.instance.currentUser!.email!.toString(),
+                              style: GoogleFonts.raleway(
+                                textStyle: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      // เปลี่ยนตรงนี้
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(
+                          minWidth: 80,
+                          maxWidth: 120,
+                          minHeight: 40,
+                          maxHeight: 40,
+                        ),
+                        child: _logout(context),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              // Body: News Section
               Text(
-                'Hello👋',
+                "ข่าวประกาศ",
                 style: GoogleFonts.raleway(
                   textStyle: const TextStyle(
-                    color: Colors.black,
+                    color: Colors.deepPurple,
                     fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                    fontSize: 18,
                   ),
                 ),
               ),
               const SizedBox(height: 10),
-              Text(
-                FirebaseAuth.instance.currentUser!.email!.toString(),
-                style: GoogleFonts.raleway(
-                  textStyle: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
+              Expanded(
+                child: ListView(
+                  children: [
+                    ...newsList.map((news) => Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      elevation: 3,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ExpansionTile(
+                        leading: const Icon(Icons.campaign, color: Colors.deepPurple),
+                        title: Text(
+                          news['title'] ?? '',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: Text(news['detail'] ?? ''),
+                          ),
+                        ],
+                      ),
+                    )),
+                  ],
                 ),
               ),
-              const SizedBox(height: 30),
-              _logout(context), // Now _logout can access context
             ],
           ),
         ),
       ),
-      ProfilePage(), // Your Profile Page
+      ProfilePage(),
     ];
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: _pages[_selectedIndex], // Display the selected page
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
