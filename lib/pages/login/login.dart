@@ -1,6 +1,5 @@
 import 'package:campus_life_hub/pages/signup/signup.dart';
 import 'package:campus_life_hub/services/auth_service.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +15,7 @@ class Login extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      bottomNavigationBar: _signup(context),
+      //bottomNavigationBar: _signup(context),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -52,7 +51,7 @@ class Login extends StatelessWidget {
             children: [
               Center(
                 child: Text(
-                  'Hello Again',
+                  'Login',
                   style: GoogleFonts.raleway(
                     textStyle: const TextStyle(
                       color: Colors.black,
@@ -66,10 +65,28 @@ class Login extends StatelessWidget {
               _emailAddress(),
               const SizedBox(height: 20),
               _password(),
-              const SizedBox(height: 50),
+              /* const SizedBox(height: 50),
               _signin(context),
+              const SizedBox(height: 16),
+              _signup(context), // ย้ายมาที่นี่ */
             ],
           ),
+        ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          16,
+          16,
+          16,
+          256, // เพิ่มระยะห่างด้านล่าง
+        ), // เปลี่ยนตรงนี้ เพิ่มระยะห่างด้านล่าง
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _signin(context),
+            const SizedBox(height: 16),
+            _signup(context),
+          ],
         ),
       ),
     );
@@ -81,7 +98,7 @@ class Login extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Email Address',
+          'Email',
           style: GoogleFonts.raleway(
             textStyle: const TextStyle(
               color: Colors.black,
@@ -95,7 +112,7 @@ class Login extends StatelessWidget {
           controller: _emailController,
           decoration: InputDecoration(
             filled: true,
-            hintText: 'example@gmail.com',
+            //hintText: 'example@email.com',
             hintStyle: const TextStyle(
               color: Color(0xff6A6A6A),
               fontWeight: FontWeight.normal,
@@ -147,7 +164,7 @@ class Login extends StatelessWidget {
   Widget _signin(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xff0D6EFD),
+        backgroundColor: const Color.fromARGB(255, 10, 11, 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         minimumSize: const Size(double.infinity, 60),
         elevation: 0,
@@ -171,7 +188,35 @@ class Login extends StatelessWidget {
   }
 
   Widget _signup(BuildContext context) {
-    return Padding(
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+        side: BorderSide(color: const Color.fromARGB(255, 5, 5, 5), width: 2),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+        minimumSize: const Size(double.infinity, 60),
+        elevation: 0,
+      ),
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Signup()),
+        );
+      },
+      child: const Text(
+        "Sign Up",
+        style: TextStyle(
+          color: Color.fromARGB(
+            255,
+            0,
+            0,
+            0,
+          ), // เปลี่ยนเป็นสีที่ต้องการ เช่น Colors.blue
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
+    );
+    /*  return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: RichText(
         textAlign: TextAlign.center,
@@ -203,6 +248,6 @@ class Login extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ); */
   }
 }
