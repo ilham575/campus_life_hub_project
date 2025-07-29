@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:campus_life_hub/pages/proflie/profile.dart'; // Assuming profile_page.dart exists
+import 'package:campus_life_hub/pages/timetable/timetable.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -84,6 +85,7 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
+      TimetablePage(),
       ProfilePage(), // Your Profile Page
     ];
 
@@ -97,6 +99,10 @@ class _HomeState extends State<Home> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'หน้าแรก',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.calendar_today),
+            label: 'ตารางเรียน',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
