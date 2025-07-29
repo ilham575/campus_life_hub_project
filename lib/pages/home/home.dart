@@ -139,10 +139,15 @@ class NewsCardList extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
-        child: ListTile(
+        child: ExpansionTile(
           leading: const Icon(Icons.campaign, color: Colors.deepPurple),
           title: Text(news['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(news['detail'] ?? ''),
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(news['detail'] ?? ''),
+            ),
+          ],
         ),
       )).toList(),
     );
