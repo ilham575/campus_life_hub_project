@@ -185,6 +185,13 @@ class _NewsCardListState extends State<NewsCardList> {
       'source': 'กองกิจการนักศึกษา',
       'isSaved': false,
     },
+    {
+      'title': 'ทุนการศึกษาประจำปี',
+      'detail': 'เปิดรับสมัครทุนการศึกษาสำหรับนักศึกษาที่มีผลการเรียนดี',
+      'category': 'วิชาการ',
+      'source': 'กองกิจการนักศึกษา',
+      'isSaved': false,
+    },
   ];
 
   String selectedCategory = 'ทั้งหมด';
