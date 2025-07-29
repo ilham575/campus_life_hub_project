@@ -112,44 +112,134 @@ class _HomeState extends State<Home> {
 }
 
 // เพิ่ม Widget สำหรับแสดงข่าว
-class NewsCardList extends StatelessWidget {
-  final List<Map<String, String>> newsList = const [
+class NewsCardList extends StatefulWidget {
+  const NewsCardList({super.key});
+
+  @override
+  State<NewsCardList> createState() => _NewsCardListState();
+}
+
+class _NewsCardListState extends State<NewsCardList> {
+  final List<Map<String, dynamic>> newsList = [
     {
       'title': 'กิจกรรมรับน้องใหม่',
       'detail': 'ขอเชิญนักศึกษาใหม่เข้าร่วมกิจกรรมรับน้อง วันที่ 10 มิ.ย. 2567',
+      'category': 'กิจกรรม',
+      'source': 'คณะวิศวกรรมศาสตร์',
+      'isSaved': false,
     },
     {
       'title': 'ประกาศปิดปรับปรุงระบบ',
       'detail': 'ระบบจะปิดปรับปรุงในวันที่ 15 มิ.ย. 2567 เวลา 22:00-02:00 น.',
+      'category': 'ทั่วไป',
+      'source': 'มหาวิทยาลัย',
+      'isSaved': false,
     },
     {
       'title': 'ทุนการศึกษาประจำปี',
       'detail': 'เปิดรับสมัครทุนการศึกษาสำหรับนักศึกษาที่มีผลการเรียนดี',
+      'category': 'วิชาการ',
+      'source': 'กองกิจการนักศึกษา',
+      'isSaved': false,
     },
   ];
 
-  const NewsCardList({super.key});
+  String selectedCategory = 'ทั้งหมด';
+
+  List<String> get categories {
+    final cats = newsList.map((e) => e['category'] as String).toSet().toList();
+    cats.sort();
+    return ['ทั้งหมด', ...cats];
+  }
+
+  void _toggleSave(int idx) {
+    setState(() {
+      newsList[idx]['isSaved'] = !(newsList[idx]['isSaved'] as bool);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final filteredNews = selectedCategory == 'ทั้งหมด'
+        ? newsList
+        : newsList.where((news) => news['category'] == selectedCategory).toList();
+
     return Column(
-      children: newsList.map((news) => Card(
-        margin: const EdgeInsets.symmetric(vertical: 8),
-        elevation: 3,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: ExpansionTile(
-          leading: const Icon(Icons.campaign, color: Colors.deepPurple),
-          title: Text(news['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
+      children: [
+        Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(news['detail'] ?? ''),
+            const Text('หมวดหมู่:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const SizedBox(width: 8),
+            DropdownButton<String>(
+              value: selectedCategory,
+              items: categories
+                  .map((cat) => DropdownMenuItem(
+                        value: cat,
+                        child: Text(cat),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  selectedCategory = value ?? 'ทั้งหมด';
+                });
+              },
             ),
           ],
         ),
-      )).toList(),
+        ...filteredNews.asMap().entries.map((entry) {
+          final idx = entry.key;
+          final news = entry.value;
+          return Card(
+            margin: const EdgeInsets.symmetric(vertical: 8),
+            elevation: 3,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: ExpansionTile(
+              leading: const Icon(Icons.campaign, color: Colors.deepPurple),
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(news['title'] ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade50,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      news['category'] ?? '',
+                      style: const TextStyle(fontSize: 12, color: Colors.blue),
+                    ),
+                  ),
+                ],
+              ),
+              subtitle: Text(news['source'] ?? '', style: const TextStyle(fontSize: 12, color: Colors.grey)),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(news['detail'] ?? ''),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        news['isSaved'] ? Icons.bookmark : Icons.bookmark_border,
+                        color: news['isSaved'] ? Colors.orange : Colors.grey,
+                      ),
+                      onPressed: () => _toggleSave(idx),
+                      tooltip: news['isSaved'] ? 'ยกเลิกบันทึก' : 'บันทึกประกาศ',
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }).toList(),
+      ],
     );
   }
 }
