@@ -38,6 +38,7 @@ dependencies:
   firebase_core: ^3.15.2
   fluttertoast: ^8.2.12
   google_fonts: 6.2.1 
+  intl: ^0.18.0
 
 dev_dependencies:
   flutter_test:
@@ -91,3 +92,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
