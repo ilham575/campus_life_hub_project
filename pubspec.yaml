@@ -38,11 +38,8 @@ dependencies:
   firebase_core: ^3.15.2
   fluttertoast: ^8.2.12
   google_fonts: 6.2.1 
-<<<<<<< HEAD
   flutter_native_splash: ^2.4.6
-=======
   intl: ^0.18.0
->>>>>>> nut_dev
 
 dev_dependencies:
   flutter_test:
