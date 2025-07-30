@@ -74,11 +74,11 @@ class Login extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(
+        padding: EdgeInsets.fromLTRB(
           16,
           16,
           16,
-          256, // เพิ่มระยะห่างด้านล่าง
+          MediaQuery.of(context).viewInsets.bottom + 16, // เพิ่มระยะห่างด้านล่าง
         ), // เปลี่ยนตรงนี้ เพิ่มระยะห่างด้านล่าง
         child: Column(
           mainAxisSize: MainAxisSize.min,
