@@ -2,6 +2,78 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfilePage extends StatelessWidget {
+  // ตัวอย่างข้อมูล (ควรดึงจาก database จริงในอนาคต)
+  final String name = 'สมชาย ใจดี';
+  final String studentId = '65010001';
+  final String faculty = 'วิศวกรรมศาสตร์';
+  final String year = 'ปี 2';
+
+  void _showEditForm(BuildContext context) {
+    final nameController = TextEditingController(text: name);
+    final idController = TextEditingController(text: studentId);
+    final facultyController = TextEditingController(text: faculty);
+    final yearController = TextEditingController(text: year);
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('แก้ไขข้อมูลโปรไฟล์', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: 'ชื่อ'),
+              ),
+              TextField(
+                controller: idController,
+                decoration: InputDecoration(labelText: 'รหัสนักศึกษา'),
+              ),
+              TextField(
+                controller: facultyController,
+                decoration: InputDecoration(labelText: 'คณะ'),
+              ),
+              TextField(
+                controller: yearController,
+                decoration: InputDecoration(labelText: 'ชั้นปี'),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    // TODO: บันทึกข้อมูลใหม่ (เชื่อมต่อ backend/database)
+                    Navigator.pop(context);
+                  },
+                  child: Text('บันทึก', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final userEmail = FirebaseAuth.instance.currentUser?.email ?? '';
@@ -32,11 +104,35 @@ class ProfilePage extends StatelessWidget {
                 ),
                 SizedBox(height: 24),
                 Text(
-                  'ชื่อผู้ใช้',
+                  name,
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Colors.deepPurple,
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'รหัสนักศึกษา: $studentId',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'คณะ: $faculty',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[700],
+                  ),
+                ),
+                SizedBox(height: 8),
+                Text(
+                  'ชั้นปี: $year',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[700],
                   ),
                 ),
                 SizedBox(height: 8),
@@ -52,7 +148,7 @@ class ProfilePage extends StatelessWidget {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      // เพิ่มฟังก์ชันแก้ไขข้อมูลที่นี่
+                      _showEditForm(context);
                     },
                     icon: Icon(Icons.edit),
                     label: Text('แก้ไขข้อมูล'),
