@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class ProfilePage extends StatelessWidget {
-  // ตัวอย่างข้อมูล (ควรดึงจาก database จริงในอนาคต)
-  final String name = 'สมชาย ใจดี';
-  final String studentId = '65010001';
-  final String faculty = 'วิศวกรรมศาสตร์';
-  final String year = 'ปี 2';
+class ProfilePage extends StatefulWidget {
+  const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  String name = 'สมชาย ใจดี';
+  String studentId = '65010001';
+  String faculty = 'วิศวกรรมศาสตร์';
+  String year = 'ปี 2';
 
   void _showEditForm(BuildContext context) {
     final nameController = TextEditingController(text: name);
@@ -54,7 +60,12 @@ class ProfilePage extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO: บันทึกข้อมูลใหม่ (เชื่อมต่อ backend/database)
+                    setState(() {
+                      name = nameController.text;
+                      studentId = idController.text;
+                      faculty = facultyController.text;
+                      year = yearController.text;
+                    });
                     Navigator.pop(context);
                   },
                   child: Text('บันทึก', style: TextStyle(color: Colors.white)),
@@ -100,7 +111,8 @@ class ProfilePage extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage('assets/profile.jpg'),
+                  backgroundColor: Colors.deepPurple.shade100,
+                  child: Icon(Icons.person, size: 50, color: Colors.deepPurple),
                 ),
                 SizedBox(height: 24),
                 Text(
