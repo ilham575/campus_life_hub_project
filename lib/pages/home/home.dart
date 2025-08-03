@@ -6,6 +6,8 @@ import 'package:campus_life_hub/pages/profile/profile.dart'; // Assuming profile
 import 'package:campus_life_hub/navbar/main_navbar.dart'; // Import the MainNavBar widget
 import 'package:campus_life_hub/pages/news/news.dart'; // หรือ path ที่ถูกต้อง
 import 'package:campus_life_hub/pages/timetable/timetable.dart';
+import 'package:provider/provider.dart';
+import 'package:campus_life_hub/pages/timetable/timetable_state.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -18,6 +20,10 @@ class _HomeState extends State<Home> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
+    if (index == 1) {
+      Provider.of<TimetableState>(context, listen: false).resetToToday();
+    }
+
     setState(() {
       _selectedIndex = index;
     });
