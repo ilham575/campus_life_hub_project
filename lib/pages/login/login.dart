@@ -30,7 +30,7 @@ class Login extends StatelessWidget {
         }
         if (snapshot.hasData && snapshot.data == true) {
           // ถ้า login แล้ว ให้ไปหน้าหลัก
-          Future.microtask(() {
+          WidgetsBinding.instance.addPostFrameCallback((_) {  
             Navigator.pushReplacementNamed(context, '/home');
           });
           return const Scaffold(

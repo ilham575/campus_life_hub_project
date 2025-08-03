@@ -56,6 +56,7 @@ class AuthService {
       }
 
       await Future.delayed(const Duration(seconds: 1));
+      if (!context.mounted) return; // เช็คว่า context นี้ยังอยู่ใน widget tree หรือไม่
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (BuildContext context) => const Home()),
@@ -86,6 +87,7 @@ class AuthService {
     await prefs.remove('token');
 
     await Future.delayed(const Duration(seconds: 1));
+    if (!context.mounted) return; // เช็คว่า context นี้ยังอยู่ใน widget tree หรือไม่
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (BuildContext context) => Login()),
