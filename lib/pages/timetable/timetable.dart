@@ -1,81 +1,49 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
+import 'timetable_state.dart';
+import 'subject_dialog.dart';
 
-class TimetablePage extends StatefulWidget {
-  @override
-  _TimetablePageState createState() => _TimetablePageState();
-}
-
-class _TimetablePageState extends State<TimetablePage> {
-  bool isGrid = false;
-  String? selectedWeekday;
-
-  final List<String> days = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์'];
-  final List<String> times = [
-    '08:00-09:00',
-    '09:00-10:00',
-    '10:00-11:00',
-    '11:00-12:00',
-    '13:00-14:00',
-    '14:00-15:00',
-    '15:00-16:00',
-  ];
-
-  final Map<String, String> subjects = {
-    'จันทร์|08:00-09:00': 'คณิต',
-    'จันทร์|09:00-10:00': 'ภาษาไทย',
-    'อังคาร|10:00-11:00': 'วิทย์',
-    'พุธ|13:00-14:00': 'อังกฤษ',
-    'พฤหัสบดี|15:00-16:00': 'ประวัติ',
-    'ศุกร์|08:00-09:00': 'ศิลปะ',
-  };
-
-  @override
-  void initState() {
-    super.initState();
-    initializeDateFormatting('th', null).then((_) {
-      final today = _getThaiWeekday();
-      setState(() {
-        selectedWeekday = today;
-      });
-    });
-  }
-
-  String _getThaiWeekday() {
-    final now = DateTime.now();
-    final formatter = DateFormat('EEEE', 'th');
-    final weekday = formatter.format(now);
-    if (weekday.contains('จันทร์')) return 'จันทร์';
-    if (weekday.contains('อังคาร')) return 'อังคาร';
-    if (weekday.contains('พุธ')) return 'พุธ';
-    if (weekday.contains('พฤหัส')) return 'พฤหัสบดี';
-    if (weekday.contains('ศุกร์')) return 'ศุกร์';
-    return 'จันทร์';
-  }
-
+class TimetablePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final timetable = Provider.of<TimetableState>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('ตารางเรียน'),
         actions: [
           IconButton(
-            icon: Icon(isGrid ? Icons.list : Icons.grid_on),
-            tooltip: isGrid ? "แสดงแบบรายการ" : "แสดงแบบตาราง",
-            onPressed: () {
-              setState(() {
-                isGrid = !isGrid;
-              });
-            },
+            icon: Icon(timetable.isGrid ? Icons.list : Icons.grid_on),
+            onPressed: timetable.toggleView,
           ),
         ],
       ),
-      body: isGrid ? buildGridTable() : buildListViewWithDaySelector(),
+      body: Column(
+        children: [
+          Expanded(
+            child: timetable.isGrid
+                ? buildGrid(timetable)
+                : buildList(timetable),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ElevatedButton.icon(
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => SubjectDialog(),
+                );
+              },
+              icon: Icon(Icons.edit_calendar),
+              label: Text('จัดการตารางเรียน'),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget buildGridTable() {
+  Widget buildGrid(TimetableState timetable) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Table(
@@ -85,121 +53,77 @@ class _TimetablePageState extends State<TimetablePage> {
           TableRow(
             decoration: BoxDecoration(color: Colors.grey[300]),
             children: [
-              TableCell(
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text('วัน/เวลา', style: TextStyle(fontWeight: FontWeight.bold)),
-                ),
-              ),
-              ...times.map((t) => TableCell(
-                    child: Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Text(
-                        t,
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  )),
+              TableCell(child: Center(child: Text('วัน/เวลา'))),
+              ...timetable.times.map((t) => TableCell(child: Center(child: Text(t)))),
             ],
           ),
-          ...days.map((day) {
+          ...timetable.days.map((day) {
             return TableRow(
               children: [
-                TableCell(
-                  child: Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(day, style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                ...times.map((time) {
-                  final key = '$day|$time';
-                  final subject = subjects[key] ?? '';
+                TableCell(child: Center(child: Text(day))),
+                ...timetable.times.map((time) {
+                  final subject = timetable.subjects['$day|$time'] ?? '';
                   return TableCell(
                     child: Container(
                       alignment: Alignment.center,
                       height: 50,
+                      color: subject.isNotEmpty ? Colors.blue[50] : null,
                       child: Text(subject),
                     ),
                   );
-                }).toList(),
+                }),
               ],
             );
-          }).toList(),
+          }),
         ],
       ),
     );
   }
 
-  Widget buildListViewWithDaySelector() {
-    final selectedDay = selectedWeekday ?? 'จันทร์';
-
-    List<Map<String, String>> filtered = [];
-    for (var time in times) {
-      final key = '$selectedDay|$time';
-      if (subjects.containsKey(key)) {
-        filtered.add({
-          'time': time,
-          'subject': subjects[key]!,
-        });
-      }
-    }
+  Widget buildList(TimetableState timetable) {
+    final day = timetable.selectedWeekday;
+    final filtered = timetable.times.map((time) {
+      final key = '$day|$time';
+      return {
+        'time': time,
+        'subject': timetable.subjects[key] ?? '',
+      };
+    }).where((e) => e['subject']!.isNotEmpty).toList();
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // 🔹 ปุ่มเลือกวันแนวนอน
         SizedBox(
           height: 60,
-          child: ListView.builder(
+          child: ListView(
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: 12),
-            itemCount: days.length,
-            itemBuilder: (context, index) {
-              final day = days[index];
-              final isSelected = day == selectedDay;
+            children: timetable.days.map((d) {
+              final selected = d == day;
               return Padding(
-                padding: const EdgeInsets.only(right: 8),
+                padding: const EdgeInsets.all(4.0),
                 child: ChoiceChip(
-                  label: Text(day),
-                  selected: isSelected,
-                  onSelected: (_) {
-                    setState(() {
-                      selectedWeekday = day;
-                    });
-                  },
-                  selectedColor: Colors.blue[300],
-                  backgroundColor: Colors.grey[300],
-                  labelStyle: TextStyle(
-                    color: isSelected ? Colors.white : Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  label: Text(d),
+                  selected: selected,
+                  onSelected: (_) => timetable.setDay(d),
                 ),
               );
-            },
+            }).toList(),
           ),
         ),
-        const SizedBox(height: 8),
-        // 🔹 แสดงรายวิชาเฉพาะวัน
         Expanded(
           child: filtered.isEmpty
-              ? Center(child: Text('ไม่มีตารางเรียนสำหรับ "$selectedDay"'))
+              ? Center(child: Text('ไม่มีตารางเรียน'))
               : ListView.builder(
-                  padding: const EdgeInsets.all(12),
                   itemCount: filtered.length,
-                  itemBuilder: (context, index) {
-                    final item = filtered[index];
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 6),
-                      child: ListTile(
-                        leading: Icon(Icons.book),
-                        title: Text(item['subject']!),
-                        subtitle: Text(item['time']!),
-                      ),
+                  itemBuilder: (_, i) {
+                    final item = filtered[i];
+                    return ListTile(
+                      leading: Icon(Icons.book),
+                      title: Text(item['subject']!),
+                      subtitle: Text(item['time']!),
                     );
                   },
                 ),
-        ),
+        )
       ],
     );
   }

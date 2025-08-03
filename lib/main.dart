@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:provider/provider.dart';
 import 'package:campus_life_hub/pages/login/login.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:campus_life_hub/pages/home/home.dart';
+import 'package:campus_life_hub/pages/timetable/timetable_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,7 +15,12 @@ Future<void> main() async {
     options: DefaultFirebaseOptions.currentPlatform
   );
   
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => TimetableState(),
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
