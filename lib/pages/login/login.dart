@@ -3,6 +3,7 @@ import 'package:campus_life_hub/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Login extends StatelessWidget {
   Login({super.key});
@@ -10,85 +11,113 @@ class Login extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  Future<bool> checkLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    return token != null && token.isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      resizeToAvoidBottomInset: true,
-      //bottomNavigationBar: _signup(context),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        toolbarHeight: 100,
-        leading: GestureDetector(
-          onTap: () {
-            if (Navigator.canPop(context)) {
-              Navigator.pop(context); // ถ้าย้อนกลับได้ → ย้อน
-            } else {
-              SystemNavigator.pop(); // ถ้าย้อนกลับไม่ได้ → ปิดแอป
-            }
-          },
-          child: Container(
-            margin: const EdgeInsets.only(left: 10),
-            decoration: const BoxDecoration(
-              color: Color(0xffF7F7F9),
-              shape: BoxShape.circle,
-            ),
-            child: const Center(
-              child: Icon(
-                Icons.arrow_back_ios_new_rounded,
-                color: Colors.black,
-              ),
-            ),
-          ),
-        ),
-      ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Center(
-                child: Text(
-                  'Login',
-                  style: GoogleFonts.raleway(
-                    textStyle: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 32,
-                    ),
+    return FutureBuilder<bool>(
+      future: checkLogin(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          // กำลังโหลด
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        }
+        if (snapshot.hasData && snapshot.data == true) {
+          // ถ้า login แล้ว ให้ไปหน้าหลัก
+          Future.microtask(() {
+            Navigator.pushReplacementNamed(context, '/home');
+          });
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          ); // หรือ widget เปล่า ๆ
+        }
+        // ถ้ายังไม่ได้ login แสดงหน้า login ปกติ
+        return Scaffold(
+          backgroundColor: Colors.white,
+          resizeToAvoidBottomInset: true,
+          //bottomNavigationBar: _signup(context),
+          appBar: AppBar(
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            toolbarHeight: 100,
+            leading: GestureDetector(
+              onTap: () {
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context); // ถ้าย้อนกลับได้ → ย้อน
+                } else {
+                  SystemNavigator.pop(); // ถ้าย้อนกลับไม่ได้ → ปิดแอป
+                }
+              },
+              child: Container(
+                margin: const EdgeInsets.only(left: 10),
+                decoration: const BoxDecoration(
+                  color: Color(0xffF7F7F9),
+                  shape: BoxShape.circle,
+                ),
+                child: const Center(
+                  child: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    color: Colors.black,
                   ),
                 ),
               ),
-              const SizedBox(height: 80),
-              _emailAddress(),
-              const SizedBox(height: 20),
-              _password(),
-              /* const SizedBox(height: 50),
+            ),
+          ),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Text(
+                      'Login',
+                      style: GoogleFonts.raleway(
+                        textStyle: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 32,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 80),
+                  _emailAddress(),
+                  const SizedBox(height: 20),
+                  _password(),
+                  /* const SizedBox(height: 50),
               _signin(context),
               const SizedBox(height: 16),
               _signup(context), // ย้ายมาที่นี่ */
-            ],
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: EdgeInsets.fromLTRB(
-          16,
-          16,
-          16,
-          MediaQuery.of(context).viewInsets.bottom + 16, // เพิ่มระยะห่างด้านล่าง
-        ), // เปลี่ยนตรงนี้ เพิ่มระยะห่างด้านล่าง
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _signin(context),
-            const SizedBox(height: 16),
-            _signup(context),
-          ],
-        ),
-      ),
+          bottomNavigationBar: Padding(
+            padding: EdgeInsets.fromLTRB(
+              16,
+              16,
+              16,
+              MediaQuery.of(context).viewInsets.bottom +
+                  32, // เพิ่มระยะห่างด้านล่าง
+            ), // เปลี่ยนตรงนี้ เพิ่มระยะห่างด้านล่าง
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _signin(context),
+                const SizedBox(height: 16),
+                _signup(context),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 

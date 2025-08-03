@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:campus_life_hub/pages/login/login.dart';
-import 'package:intl/date_symbol_data_local.dart'; 
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:campus_life_hub/pages/home/home.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,7 +23,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Login()
+      home: Login(),
+      routes: {
+        '/home': (context) => const Home(), // เพิ่มบรรทัดนี้
+      },
     );
   }
 }
