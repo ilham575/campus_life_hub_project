@@ -2,19 +2,30 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'timetable_state.dart';
 
-class SubjectDialog extends StatefulWidget {
-  @override
-  _SubjectDialogState createState() => _SubjectDialogState();
-}
+class SubjectDialog extends StatelessWidget {
+  final String? selectedDay;
+  final String? selectedTime;
+  final TextEditingController controller;
+  final void Function(String?) onDayChanged;
+  final void Function(String?) onTimeChanged;
+  final VoidCallback onSave;
+  final VoidCallback? onDelete;
 
-class _SubjectDialogState extends State<SubjectDialog> {
-  String? selectedDay;
-  String? selectedTime;
-  final TextEditingController controller = TextEditingController();
+  const SubjectDialog({
+    super.key,
+    required this.selectedDay,
+    required this.selectedTime,
+    required this.controller,
+    required this.onDayChanged,
+    required this.onTimeChanged,
+    required this.onSave,
+    this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
     final timetable = Provider.of<TimetableState>(context);
+
     return AlertDialog(
       title: Text('จัดการตารางเรียน'),
       content: Column(
@@ -26,12 +37,7 @@ class _SubjectDialogState extends State<SubjectDialog> {
             items: timetable.days
                 .map((d) => DropdownMenuItem(value: d, child: Text(d)))
                 .toList(),
-            onChanged: (val) {
-              setState(() {
-                selectedDay = val;
-                _updateController(timetable);
-              });
-            },
+            onChanged: onDayChanged,
           ),
           DropdownButtonFormField<String>(
             decoration: InputDecoration(labelText: 'เลือกเวลา'),
@@ -39,12 +45,7 @@ class _SubjectDialogState extends State<SubjectDialog> {
             items: timetable.times
                 .map((t) => DropdownMenuItem(value: t, child: Text(t)))
                 .toList(),
-            onChanged: (val) {
-              setState(() {
-                selectedTime = val;
-                _updateController(timetable);
-              });
-            },
+            onChanged: onTimeChanged,
           ),
           TextField(
             controller: controller,
@@ -53,43 +54,26 @@ class _SubjectDialogState extends State<SubjectDialog> {
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text('ยกเลิก')),
-        if (_hasSubject(timetable))
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('ยกเลิก'),
+        ),
+        if (onDelete != null)
           TextButton(
             onPressed: () {
-              timetable.removeSubject(selectedDay!, selectedTime!);
+              onDelete!();
               Navigator.pop(context);
             },
             child: Text('ลบ', style: TextStyle(color: Colors.red)),
           ),
         TextButton(
           onPressed: () {
-            if (selectedDay != null &&
-                selectedTime != null &&
-                controller.text.trim().isNotEmpty) {
-              timetable.updateSubject(
-                selectedDay!,
-                selectedTime!,
-                controller.text.trim(),
-              );
-              Navigator.pop(context);
-            }
+            onSave();
+            Navigator.pop(context);
           },
           child: Text('บันทึก'),
         ),
       ],
     );
-  }
-
-  void _updateController(TimetableState timetable) {
-    if (selectedDay != null && selectedTime != null) {
-      final key = '$selectedDay|$selectedTime';
-      controller.text = timetable.subjects[key] ?? '';
-    }
-  }
-
-  bool _hasSubject(TimetableState timetable) {
-    if (selectedDay == null || selectedTime == null) return false;
-    return timetable.subjects.containsKey('$selectedDay|$selectedTime');
   }
 }

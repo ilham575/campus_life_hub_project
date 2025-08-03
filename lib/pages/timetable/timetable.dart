@@ -29,9 +29,61 @@ class TimetablePage extends StatelessWidget {
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton.icon(
               onPressed: () {
+                String? selectedDay;
+                String? selectedTime;
+                final controller = TextEditingController();
+                final timetable = Provider.of<TimetableState>(context, listen: false);
+
+                void updateController() {
+                  if (selectedDay != null && selectedTime != null) {
+                    final key = '$selectedDay|$selectedTime';
+                    controller.text = timetable.subjects[key] ?? '';
+                  }
+                }
+
+                bool hasSubject() {
+                  if (selectedDay == null || selectedTime == null) return false;
+                  return timetable.subjects.containsKey('$selectedDay|$selectedTime');
+                }
+
                 showDialog(
                   context: context,
-                  builder: (_) => SubjectDialog(),
+                  builder: (_) => StatefulBuilder(
+                    builder: (context, setState) => SubjectDialog(
+                      selectedDay: selectedDay,
+                      selectedTime: selectedTime,
+                      controller: controller,
+                      onDayChanged: (val) {
+                        setState(() {
+                          selectedDay = val;
+                          updateController();
+                        });
+                      },
+                      onTimeChanged: (val) {
+                        setState(() {
+                          selectedTime = val;
+                          updateController();
+                        });
+                      },
+                      onSave: () {
+                        if (selectedDay != null &&
+                            selectedTime != null &&
+                            controller.text.trim().isNotEmpty) {
+                          timetable.updateSubject(
+                            selectedDay!,
+                            selectedTime!,
+                            controller.text.trim(),
+                          );
+                        }
+                      },
+                      onDelete: hasSubject()
+                          ? () {
+                              timetable.removeSubject(
+                                  selectedDay!, selectedTime!);
+                            }
+                          : null,
+                    ),
+                  ),
                 );
               },
               icon: Icon(Icons.edit_calendar),
