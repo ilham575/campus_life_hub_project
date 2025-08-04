@@ -7,7 +7,6 @@ import 'package:campus_life_hub/pages/login/login.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:campus_life_hub/pages/home/home.dart';
 import 'package:campus_life_hub/pages/timetable/timetable_state.dart';
-import 'package:intl/date_symbol_data_local.dart'; 
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
