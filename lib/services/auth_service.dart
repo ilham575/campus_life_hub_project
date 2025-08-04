@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-
 import '../pages/home/home.dart';
 import '../pages/login/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
   Future<bool> signup({
@@ -11,31 +11,31 @@ class AuthService {
     required String password,
     required BuildContext context,
   }) async {
-   try {
-    await FirebaseAuth.instance.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    return true; // สมัครสำเร็จ
-  } on FirebaseAuthException catch (e) {
-    String message = '';
-    if (e.code == 'weak-password') {
-      message = 'The password provided is too weak.';
-    } else if (e.code == 'email-already-in-use') {
-      message = 'An account already exists with that email.';
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return true; // สมัครสำเร็จ
+    } on FirebaseAuthException catch (e) {
+      String message = '';
+      if (e.code == 'weak-password') {
+        message = 'The password provided is too weak.';
+      } else if (e.code == 'email-already-in-use') {
+        message = 'An account already exists with that email.';
+      }
+      Fluttertoast.showToast(
+        msg: message,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.SNACKBAR,
+        backgroundColor: Colors.black54,
+        textColor: Colors.white,
+        fontSize: 14.0,
+      );
+      return false; // สมัครไม่สำเร็จ
+    } catch (e) {
+      return false;
     }
-    Fluttertoast.showToast(
-      msg: message,
-      toastLength: Toast.LENGTH_LONG,
-      gravity: ToastGravity.SNACKBAR,
-      backgroundColor: Colors.black54,
-      textColor: Colors.white,
-      fontSize: 14.0,
-    );
-    return false; // สมัครไม่สำเร็จ
-  } catch (e) {
-    return false;
-  }
   }
 
   Future<void> signin({
@@ -44,12 +44,19 @@ class AuthService {
     required BuildContext context,
   }) async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      final userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      // ดึง token จาก Firebase
+      final token = await userCredential.user?.getIdToken();
+
+      if (token != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('token', token);
+      }
 
       await Future.delayed(const Duration(seconds: 1));
+      if (!context.mounted) return; // เช็คว่า context นี้ยังอยู่ใน widget tree หรือไม่
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (BuildContext context) => const Home()),
@@ -74,7 +81,13 @@ class AuthService {
 
   Future<void> signout({required BuildContext context}) async {
     await FirebaseAuth.instance.signOut();
+
+    // ลบ token ออกจาก SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+
     await Future.delayed(const Duration(seconds: 1));
+    if (!context.mounted) return; // เช็คว่า context นี้ยังอยู่ใน widget tree หรือไม่
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (BuildContext context) => Login()),
