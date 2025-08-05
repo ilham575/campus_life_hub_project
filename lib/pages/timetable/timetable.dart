@@ -168,10 +168,16 @@ class TimetablePage extends StatelessWidget {
                   itemCount: filtered.length,
                   itemBuilder: (_, i) {
                     final item = filtered[i];
-                    return ListTile(
-                      leading: Icon(Icons.book),
-                      title: Text(item['subject']!),
-                      subtitle: Text(item['time']!),
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.all(12),
+                        title: Text(item['subject']!),
+                        subtitle: Text(item['time']!),
+                      ),
                     );
                   },
                 ),
