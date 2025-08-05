@@ -8,6 +8,7 @@ import 'package:campus_life_hub/pages/news.dart'; // หรือ path ที่
 import 'package:campus_life_hub/pages/timetable/timetable.dart';
 import 'package:provider/provider.dart';
 import 'package:campus_life_hub/pages/timetable/timetable_state.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -50,6 +51,66 @@ class _HomeState extends State<Home> {
           fontWeight: FontWeight.bold,
           fontSize: 18,
         ),
+      ),
+    );
+  }
+
+  void _showAddNewsDialog(BuildContext context) {
+    final titleController = TextEditingController();
+    final detailController = TextEditingController();
+    final categoryController = TextEditingController();
+    final sourceController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('เพิ่มข่าวใหม่'),
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(labelText: 'หัวข้อข่าว'),
+              ),
+              TextField(
+                controller: detailController,
+                decoration: const InputDecoration(labelText: 'รายละเอียด'),
+              ),
+              TextField(
+                controller: categoryController,
+                decoration: const InputDecoration(labelText: 'หมวดหมู่'),
+              ),
+              TextField(
+                controller: sourceController,
+                decoration: const InputDecoration(labelText: 'แหล่งข่าว'),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: const Text('ยกเลิก'),
+            onPressed: () => Navigator.of(ctx).pop(),
+          ),
+          ElevatedButton(
+            child: const Text('บันทึก'),
+            onPressed: () async {
+              final title = titleController.text.trim();
+              final detail = detailController.text.trim();
+              final category = categoryController.text.trim();
+              final source = sourceController.text.trim();
+              if (title.isEmpty || detail.isEmpty || category.isEmpty || source.isEmpty) return;
+              await FirebaseFirestore.instance.collection('announcement').add({
+                'title': title,
+                'detail': detail,
+                'category': category,
+                'source': source,
+                'createdAt': FieldValue.serverTimestamp(),
+              });
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
       ),
     );
   }
@@ -156,6 +217,13 @@ class _HomeState extends State<Home> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
       ),
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton(
+              onPressed: () => _showAddNewsDialog(context),
+              child: const Icon(Icons.add),
+              tooltip: 'เพิ่มข่าวใหม่',
+            )
+          : null,
     );
   }
 }
