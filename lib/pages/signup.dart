@@ -3,12 +3,17 @@ import 'package:campus_life_hub/services/auth_service.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Signup extends StatelessWidget {
   Signup({super.key});
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _studentIdController = TextEditingController();
+  final TextEditingController _facultyController = TextEditingController();
+  final TextEditingController _yearController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +43,15 @@ class Signup extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 80),
+              const SizedBox(height: 40),
+              _nameField(),
+              const SizedBox(height: 20),
+              _studentIdField(),
+              const SizedBox(height: 20),
+              _facultyField(),
+              const SizedBox(height: 20),
+              _yearField(),
+              const SizedBox(height: 20),
               _emailAddress(),
               const SizedBox(height: 20),
               _password(),
@@ -52,72 +65,33 @@ class Signup extends StatelessWidget {
   }
 
   Widget _emailAddress() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Email Address',
-          style: GoogleFonts.raleway(
-            textStyle: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.normal,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _emailController,
-          decoration: InputDecoration(
-            filled: true,
-            //hintText: 'example@gmail.com',
-            hintStyle: const TextStyle(
-              color: Color(0xff6A6A6A),
-              fontWeight: FontWeight.normal,
-              fontSize: 14,
-            ),
-            fillColor: const Color(0xffF7F7F9),
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-        ),
-      ],
-    );
+    return TextField(
+    controller: _emailController,
+    decoration: InputDecoration(
+      labelText: 'อีเมล',
+      filled: true,
+      fillColor: const Color(0xffF7F7F9),
+      border: OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(14),
+      ),
+    ),
+  );
   }
 
   Widget _password() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Password',
-          style: GoogleFonts.raleway(
-            textStyle: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.normal,
-              fontSize: 16,
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _passwordController,
-          obscureText: true,
-          decoration: InputDecoration(
-            filled: true,
-            fillColor: const Color(0xffF7F7F9),
-            border: OutlineInputBorder(
-              borderSide: BorderSide.none,
-              borderRadius: BorderRadius.circular(14),
-            ),
-          ),
-        ),
-      ],
-    );
+    return TextField(
+    controller: _passwordController,
+    decoration: InputDecoration(
+      labelText: 'รหัสผ่าน',
+      filled: true,
+      fillColor: const Color(0xffF7F7F9),
+      border: OutlineInputBorder(
+        borderSide: BorderSide.none,
+        borderRadius: BorderRadius.circular(14),
+      ),
+    ),
+  );
   }
 
   Widget _signup(BuildContext context) {
@@ -135,6 +109,21 @@ class Signup extends StatelessWidget {
           context: context,
         );
         if (success) {
+          // เพิ่มข้อมูลผู้ใช้ใน Firestore
+          final user = AuthService().currentUser;
+          if (user != null) {
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(user.uid)
+                .set({
+                  'name': _nameController.text,
+                  'student_id': _studentIdController.text,
+                  'faculty': _facultyController.text,
+                  'year': int.tryParse(_yearController.text) ?? 1,
+                  'profile_picture_url': '',
+                  'notification_settings': {},
+                });
+          }
           showDialog(
             context: context,
             builder: (context) => AlertDialog(
@@ -232,6 +221,67 @@ class Signup extends StatelessWidget {
                 },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _nameField() {
+    return TextField(
+      controller: _nameController,
+      decoration: InputDecoration(
+        labelText: 'ชื่อ',
+        filled: true,
+        fillColor: const Color(0xffF7F7F9),
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+    );
+  }
+
+  Widget _studentIdField() {
+    return TextField(
+      controller: _studentIdController,
+      decoration: InputDecoration(
+        labelText: 'รหัสนักศึกษา',
+        filled: true,
+        fillColor: const Color(0xffF7F7F9),
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+    );
+  }
+
+  Widget _facultyField() {
+    return TextField(
+      controller: _facultyController,
+      decoration: InputDecoration(
+        labelText: 'คณะ',
+        filled: true,
+        fillColor: const Color(0xffF7F7F9),
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+    );
+  }
+
+  Widget _yearField() {
+    return TextField(
+      controller: _yearController,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        labelText: 'ชั้นปี',
+        filled: true,
+        fillColor: const Color(0xffF7F7F9),
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
         ),
       ),
     );

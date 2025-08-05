@@ -93,4 +93,6 @@ class AuthService {
       MaterialPageRoute(builder: (BuildContext context) => Login()),
     );
   }
+
+  User? get currentUser => FirebaseAuth.instance.currentUser;
 }
