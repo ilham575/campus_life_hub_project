@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:campus_life_hub/pages/onboarding/onboarding.dart';
+import 'package:campus_life_hub/pages/onboarding.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
-import 'package:campus_life_hub/pages/login/login.dart';
+import 'package:campus_life_hub/pages/login.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:campus_life_hub/pages/home/home.dart';
+import 'package:campus_life_hub/pages/home.dart';
 import 'package:campus_life_hub/pages/timetable/timetable_state.dart';
-import 'package:intl/date_symbol_data_local.dart'; 
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
