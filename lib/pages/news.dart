@@ -1,69 +1,10 @@
 // news_page.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class NewsPage extends StatelessWidget {
   const NewsPage({super.key});
-
-  void _showAddNewsDialog(BuildContext context) {
-    final titleController = TextEditingController();
-    final detailController = TextEditingController();
-    final categoryController = TextEditingController();
-    final sourceController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('เพิ่มข่าวใหม่'),
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: 'หัวข้อข่าว'),
-              ),
-              TextField(
-                controller: detailController,
-                decoration: const InputDecoration(labelText: 'รายละเอียด'),
-              ),
-              TextField(
-                controller: categoryController,
-                decoration: const InputDecoration(labelText: 'หมวดหมู่'),
-              ),
-              TextField(
-                controller: sourceController,
-                decoration: const InputDecoration(labelText: 'แหล่งข่าว'),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            child: const Text('ยกเลิก'),
-            onPressed: () => Navigator.of(ctx).pop(),
-          ),
-          ElevatedButton(
-            child: const Text('บันทึก'),
-            onPressed: () async {
-              final title = titleController.text.trim();
-              final detail = detailController.text.trim();
-              final category = categoryController.text.trim();
-              final source = sourceController.text.trim();
-              if (title.isEmpty || detail.isEmpty || category.isEmpty || source.isEmpty) return;
-              await FirebaseFirestore.instance.collection('announcement').add({
-                'title': title,
-                'detail': detail,
-                'category': category,
-                'source': source,
-                'createdAt': FieldValue.serverTimestamp(),
-              });
-              Navigator.of(ctx).pop();
-            },
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,11 +24,6 @@ class NewsPage extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddNewsDialog(context),
-        child: const Icon(Icons.add),
-        tooltip: 'เพิ่มข่าวใหม่',
-      ),
     );
   }
 }
@@ -102,12 +38,36 @@ class NewsCardList extends StatefulWidget {
 
 class _NewsCardListState extends State<NewsCardList> {
   String selectedCategory = 'ทั้งหมด';
+  final Set<String> savedIds = {};
 
   // ลบ setState ออกจาก _updateCategories
   List<String> _getCategories(List<DocumentSnapshot> docs) {
     final cats = docs.map((e) => e['category'] as String).toSet().toList();
     cats.sort();
     return ['ทั้งหมด', ...cats];
+  }
+
+  Future<void> _toggleSave(String id) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final uid = user.uid;
+    final docRef = FirebaseFirestore.instance.collection('announcement').doc(id);
+
+    setState(() {
+      if (savedIds.contains(id)) {
+        savedIds.remove(id);
+        // remove uid from saved array in Firestore
+        docRef.update({
+          'saved': FieldValue.arrayRemove([uid])
+        });
+      } else {
+        savedIds.add(id);
+        // add uid to saved array in Firestore
+        docRef.update({
+          'saved': FieldValue.arrayUnion([uid])
+        });
+      }
+    });
   }
 
   @override
@@ -129,6 +89,9 @@ class _NewsCardListState extends State<NewsCardList> {
 
         final docs = snapshot.data!.docs;
         final categories = _getCategories(docs);
+
+        final user = FirebaseAuth.instance.currentUser;
+        final uid = user?.uid;
 
         final filteredDocs = selectedCategory == 'ทั้งหมด'
             ? docs
@@ -157,6 +120,11 @@ class _NewsCardListState extends State<NewsCardList> {
               ],
             ),
             ...filteredDocs.map((doc) {
+              final docId = doc.id;
+              final data = doc.data() as Map<String, dynamic>;
+              // เช็คว่าประกาศนี้ถูกบันทึกโดย user นี้หรือไม่
+              final List<dynamic>? savedList = data['saved'] is List ? data['saved'] as List<dynamic> : null;
+              final isSaved = savedList != null && uid != null ? savedList.contains(uid) : savedIds.contains(docId);
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 elevation: 3,
@@ -189,7 +157,20 @@ class _NewsCardListState extends State<NewsCardList> {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                       child: Text(doc['detail'] ?? ''),
                     ),
-                    // Bookmark/save feature can be added here later
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            isSaved ? Icons.bookmark : Icons.bookmark_border,
+                            color: isSaved ? Colors.orange : Colors.grey,
+                          ),
+                          onPressed: () => _toggleSave(docId),
+                          tooltip: isSaved ? 'ยกเลิกบันทึก' : 'บันทึกประกาศ',
+                        ),
+                        const SizedBox(width: 8),
+                      ],
+                    ),
                   ],
                 ),
               );
