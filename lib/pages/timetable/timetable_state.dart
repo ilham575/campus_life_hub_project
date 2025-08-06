@@ -50,28 +50,24 @@ class TimetableState with ChangeNotifier {
 
    Future<void> _loadFromFirestore() async {
     if (_userId == null) return;
-    try {
-      final doc = await _db.collection('timetable').doc(_userId).get();
-      if (doc.exists) {
-        final data = doc.data()!;
-        _subjects.clear();
-        data.forEach((key, value) {
-          _subjects[key] = value.toString();
-        });
-        notifyListeners();
-      }
-    } catch (e) {
-      print('โหลดข้อมูลไม่สำเร็จ: $e');
+    
+    final doc = await _db.collection('timetable').doc(_userId).get();
+    if (doc.exists) {
+      final data = doc.data()!;
+      _subjects.clear();
+      data.forEach((key, value) {
+        _subjects[key] = value.toString();
+      });
+      notifyListeners();
     }
+    
   }
   
   Future<void> _saveToFirestore() async {
     if (_userId == null) return;
-    try {
-      await _db.collection('timetable').doc(_userId).set(_subjects);
-    } catch (e) {
-      print('บันทึกข้อมูลไม่สำเร็จ: $e');
-    }
+
+    await _db.collection('timetable').doc(_userId).set(_subjects);
+    
   }
 
   void toggleView() {

@@ -10,7 +10,7 @@ class TimetablePage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('ตารางเรียน'),
+        title: const Text('ตารางเรียน'),
         actions: [
           IconButton(
             icon: Icon(timetable.isGrid ? Icons.list : Icons.grid_on),
@@ -22,8 +22,8 @@ class TimetablePage extends StatelessWidget {
         children: [
           Expanded(
             child: timetable.isGrid
-                ? buildGrid(timetable)
-                : buildList(timetable),
+                ? buildGrid(context, timetable)
+                : buildList(context, timetable),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -86,8 +86,8 @@ class TimetablePage extends StatelessWidget {
                   ),
                 );
               },
-              icon: Icon(Icons.edit_calendar),
-              label: Text('จัดการตารางเรียน'),
+              icon: const Icon(Icons.edit_calendar),
+              label: const Text('จัดการตารางเรียน'),
             ),
           ),
         ],
@@ -95,17 +95,17 @@ class TimetablePage extends StatelessWidget {
     );
   }
 
-  Widget buildGrid(TimetableState timetable) {
+  Widget buildGrid(BuildContext context, TimetableState timetable) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Table(
         border: TableBorder.all(color: Colors.grey),
-        defaultColumnWidth: FixedColumnWidth(100),
+        defaultColumnWidth: const FixedColumnWidth(100),
         children: [
           TableRow(
             decoration: BoxDecoration(color: Colors.grey[300]),
             children: [
-              TableCell(child: Center(child: Text('วัน/เวลา'))),
+              const TableCell(child: Center(child: Text('วัน/เวลา'))),
               ...timetable.times.map((t) => TableCell(child: Center(child: Text(t)))),
             ],
           ),
@@ -116,11 +116,38 @@ class TimetablePage extends StatelessWidget {
                 ...timetable.times.map((time) {
                   final subject = timetable.subjects['$day|$time'] ?? '';
                   return TableCell(
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 50,
-                      color: subject.isNotEmpty ? Colors.blue[50] : null,
-                      child: Text(subject),
+                    child: InkWell(
+                      onTap: () {
+                        final controller = TextEditingController(text: subject);
+                        String selectedDay = day;
+                        String selectedTime = time;
+
+                        showDialog(
+                          context: context,
+                          builder: (_) => SubjectDialog(
+                            selectedDay: selectedDay,
+                            selectedTime: selectedTime,
+                            controller: controller,
+                            onDayChanged: (_) {}, // ไม่ต้องแก้วันใน Grid mode
+                            onTimeChanged: (_) {},
+                            onSave: () {
+                              if (controller.text.trim().isNotEmpty) {
+                                timetable.updateSubject(
+                                    selectedDay, selectedTime, controller.text.trim());
+                              }
+                            },
+                            onDelete: subject.isNotEmpty
+                                ? () => timetable.removeSubject(selectedDay, selectedTime)
+                                : null,
+                          ),
+                        );
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 50,
+                        color: subject.isNotEmpty ? Colors.blue[50] : null,
+                        child: Text(subject),
+                      ),
                     ),
                   );
                 }),
@@ -132,7 +159,7 @@ class TimetablePage extends StatelessWidget {
     );
   }
 
-  Widget buildList(TimetableState timetable) {
+  Widget buildList(BuildContext context, TimetableState timetable) {
     final day = timetable.selectedWeekday;
     final filtered = timetable.times.map((time) {
       final key = '$day|$time';
@@ -163,11 +190,15 @@ class TimetablePage extends StatelessWidget {
         ),
         Expanded(
           child: filtered.isEmpty
-              ? Center(child: Text('ไม่มีตารางเรียน'))
+              ? const Center(child: Text('ไม่มีตารางเรียน'))
               : ListView.builder(
                   itemCount: filtered.length,
                   itemBuilder: (_, i) {
                     final item = filtered[i];
+                    final subject = item['subject']!;
+                    final time = item['time']!;
+                    final day = timetable.selectedWeekday;
+
                     return Card(
                       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       shape: RoundedRectangleBorder(
@@ -175,13 +206,33 @@ class TimetablePage extends StatelessWidget {
                       ),
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(12),
-                        title: Text(item['subject']!),
-                        subtitle: Text(item['time']!),
+                        title: Text(subject),
+                        subtitle: Text(time),
+                        onTap: () {
+                          final controller = TextEditingController(text: subject);
+
+                          showDialog(
+                            context: context,
+                            builder: (_) => SubjectDialog(
+                              selectedDay: day,
+                              selectedTime: time,
+                              controller: controller,
+                              onDayChanged: (_) {}, // ไม่ให้เปลี่ยนวันใน list mode
+                              onTimeChanged: (_) {},
+                              onSave: () {
+                                if (controller.text.trim().isNotEmpty) {
+                                  timetable.updateSubject(day, time, controller.text.trim());
+                                }
+                              },
+                              onDelete: () => timetable.removeSubject(day, time),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
                 ),
-        )
+        ),
       ],
     );
   }
