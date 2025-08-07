@@ -82,6 +82,7 @@ class TimetablePage extends StatelessWidget {
                                   selectedDay!, selectedTime!);
                             }
                           : null,
+                      showDropdowns: true, // เพิ่มตรงนี้ (default ก็ได้)
                     ),
                   ),
                 );
@@ -139,6 +140,7 @@ class TimetablePage extends StatelessWidget {
                             onDelete: subject.isNotEmpty
                                 ? () => timetable.removeSubject(selectedDay, selectedTime)
                                 : null,
+                            showDropdowns: false, // ซ่อน dropdown
                           ),
                         );
                       },
@@ -225,6 +227,7 @@ class TimetablePage extends StatelessWidget {
                                 }
                               },
                               onDelete: () => timetable.removeSubject(day, time),
+                              showDropdowns: false, // ซ่อน dropdown
                             ),
                           );
                         },
