@@ -15,6 +15,8 @@ class Signup extends StatelessWidget {
   final TextEditingController _facultyController = TextEditingController();
   final TextEditingController _yearController = TextEditingController();
 
+  final ValueNotifier<bool> _obscurePassword = ValueNotifier<bool>(true);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,32 +68,47 @@ class Signup extends StatelessWidget {
 
   Widget _emailAddress() {
     return TextField(
-    controller: _emailController,
-    decoration: InputDecoration(
-      labelText: 'อีเมล',
-      filled: true,
-      fillColor: const Color(0xffF7F7F9),
-      border: OutlineInputBorder(
-        borderSide: BorderSide.none,
-        borderRadius: BorderRadius.circular(14),
+      controller: _emailController,
+      decoration: InputDecoration(
+        labelText: 'อีเมล',
+        filled: true,
+        fillColor: const Color(0xffF7F7F9),
+        border: OutlineInputBorder(
+          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(14),
+        ),
       ),
-    ),
-  );
+    );
   }
 
   Widget _password() {
-    return TextField(
-    controller: _passwordController,
-    decoration: InputDecoration(
-      labelText: 'รหัสผ่าน',
-      filled: true,
-      fillColor: const Color(0xffF7F7F9),
-      border: OutlineInputBorder(
-        borderSide: BorderSide.none,
-        borderRadius: BorderRadius.circular(14),
-      ),
-    ),
-  );
+    return ValueListenableBuilder<bool>(
+      valueListenable: _obscurePassword,
+      builder: (context, obscure, _) {
+        return TextField(
+          controller: _passwordController,
+          obscureText: obscure,
+          decoration: InputDecoration(
+            labelText: 'รหัสผ่าน',
+            filled: true,
+            fillColor: const Color(0xffF7F7F9),
+            border: OutlineInputBorder(
+              borderSide: BorderSide.none,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            suffixIcon: IconButton(
+              icon: Icon(
+                obscure ? Icons.visibility_off : Icons.visibility,
+                color: Colors.grey,
+              ),
+              onPressed: () {
+                _obscurePassword.value = !obscure;
+              },
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _signup(BuildContext context) {
