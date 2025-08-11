@@ -39,6 +39,7 @@ class NewsCardList extends StatefulWidget {
 class _NewsCardListState extends State<NewsCardList> {
   String selectedCategory = 'ทั้งหมด';
   final Set<String> savedIds = {};
+  final Map<String, bool> expandedMap = {}; // เพิ่ม map สำหรับสถานะเปิด/ปิด
 
   // ลบ setState ออกจาก _updateCategories
   List<String> _getCategories(List<DocumentSnapshot> docs) {
@@ -122,9 +123,12 @@ class _NewsCardListState extends State<NewsCardList> {
             ...filteredDocs.map((doc) {
               final docId = doc.id;
               final data = doc.data() as Map<String, dynamic>;
-              // เช็คว่าประกาศนี้ถูกบันทึกโดย user นี้หรือไม่
               final List<dynamic>? savedList = data['saved'] is List ? data['saved'] as List<dynamic> : null;
               final isSaved = savedList != null && uid != null ? savedList.contains(uid) : savedIds.contains(docId);
+
+              // กำหนดสถานะเปิด/ปิด
+              final isExpanded = expandedMap[docId] ?? false;
+
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 elevation: 3,
@@ -132,6 +136,13 @@ class _NewsCardListState extends State<NewsCardList> {
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: ExpansionTile(
+                  key: PageStorageKey(docId), // ใช้ key เพื่อคง state
+                  initiallyExpanded: isExpanded,
+                  onExpansionChanged: (expanded) {
+                    setState(() {
+                      expandedMap[docId] = expanded;
+                    });
+                  },
                   leading: const Icon(Icons.campaign, color: Colors.deepPurple),
                   title: Row(
                     children: [
