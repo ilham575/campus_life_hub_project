@@ -11,6 +11,7 @@ class TimetablePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ตารางเรียน'),
+        backgroundColor: Colors.deepPurple,
         actions: [
           IconButton(
             icon: Icon(timetable.isGrid ? Icons.list : Icons.grid_on),
