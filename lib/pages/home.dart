@@ -8,6 +8,7 @@ import 'package:campus_life_hub/pages/news.dart';
 import 'package:campus_life_hub/pages/timetable/timetable.dart';
 import 'package:provider/provider.dart';
 import 'package:campus_life_hub/pages/timetable/timetable_state.dart';
+import 'package:campus_life_hub/pages/campus_map.dart'; // เพิ่ม import
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -138,8 +139,8 @@ class _HomeState extends State<Home> {
         ),
       ),
       TimetablePage(),
+      CampusMapPage(), // เพิ่มหน้าแผนที่มหาวิทยาลัย
       ProfilePage(),
-      NewsPage(),
     ];
 
     return Scaffold(
